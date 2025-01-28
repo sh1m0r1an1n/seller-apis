@@ -45,8 +45,7 @@ def get_product_list(page, campaign_id, access_token):
 
 
 def update_stocks(stocks, campaign_id, access_token):
-    """Обновляет информацию о наличии товаров в рекламной кампании
-    на Яндекс.Маркете.
+    """Обновляет информацию о наличии товаров на Яндекс.Маркете.
 
     Аргументы:
         stocks (list): Список словарей с данными о товарах и их наличии.
