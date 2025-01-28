@@ -22,7 +22,8 @@ def get_product_list(page, campaign_id, access_token):
         list: Список товаров, полученных из ответа API.
 
     Исключения:
-        requests.exceptions.RequestException: Если возникает ошибка при отправке запроса.
+        requests.exceptions.RequestException: Если возникает ошибка при
+        отправке запроса.
         ValueError: Если 'result' отсутствует в ответе API.
     """
     endpoint_url = "https://api.partner.market.yandex.ru/"
@@ -56,7 +57,8 @@ def update_stocks(stocks, campaign_id, access_token):
         dict: Ответ API в формате JSON.
 
     Исключения:
-        requests.exceptions.RequestException: Если возникает ошибка при отправке запроса.
+        requests.exceptions.RequestException: Если возникает ошибка
+        при отправке запроса.
     """
     endpoint_url = "https://api.partner.market.yandex.ru/"
     headers = {
@@ -77,7 +79,8 @@ def update_price(prices, campaign_id, access_token):
     """Обновляет цены предложений в рекламной кампании на Яндекс.Маркете.
 
     Аргументы:
-        prices (list): Список словарей с данными о предложениях и их новых ценах.
+        prices (list): Список словарей с данными о предложениях
+        и их новых ценах.
         campaign_id (str): Идентификатор рекламной кампании.
         access_token (str): Токен доступа для авторизации.
 
@@ -85,7 +88,8 @@ def update_price(prices, campaign_id, access_token):
         dict: Ответ API в формате JSON.
 
     Исключения:
-        requests.exceptions.RequestException: Если возникает ошибка при отправке запроса.
+        requests.exceptions.RequestException: Если возникает ошибка
+        при отправке запроса.
     """
     endpoint_url = "https://api.partner.market.yandex.ru/"
     headers = {
@@ -113,8 +117,10 @@ def get_offer_ids(campaign_id, market_token):
         list: Список артикулов товаров.
 
     Исключения:
-        requests.exceptions.RequestException: Если возникает ошибка при отправке запроса.
-        ValueError: Если 'offerMappingEntries' или 'paging' отсутствуют в ответе API.
+        requests.exceptions.RequestException: Если возникает ошибка
+        при отправке запроса.
+        ValueError: Если 'offerMappingEntries' или 'paging' отсутствуют
+        в ответе API.
     """
     page = ""
     product_list = []
@@ -156,12 +162,14 @@ def create_stocks(watch_remnants, offer_ids, warehouse_id):
         print(stocks)
 
     Исключения:
-        Нет явных исключений, но могут возникнуть ошибки, связанные с типами данных
+        Нет явных исключений, но могут возникнуть ошибки, связанные
+        с типами данных
         или переданными значениями.
     """
     # Уберем то, что не загружено в market
     stocks = list()
-    date = str(datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z")
+    date = str(datetime.datetime.utcnow().replace(
+        microsecond=0).isoformat() + "Z")
     for watch in watch_remnants:
         if str(watch.get("Код")) in offer_ids:
             count = str(watch.get("Количество"))
@@ -294,8 +302,8 @@ async def upload_stocks(watch_remnants, campaign_id, market_token, warehouse_id)
 
     Возвращаемое значение:
         tuple: Кортеж из двух элементов:
-            - list: Список словарей с данными об остатках товаров, где количество
-              товара не равно нулю.
+            - list: Список словарей с данными об остатках товаров,
+            где количество товара не равно нулю.
             - list: Список всех словарей с данными об остатках товаров.
 
     Пример использования:
@@ -310,13 +318,17 @@ async def upload_stocks(watch_remnants, campaign_id, market_token, warehouse_id)
             watch_remnants, campaign_id, market_token, warehouse_id
         )
         print(not_empty)
-        # Вывод: [{'sku': '123', 'warehouseId': 'warehouse_1', 'items': [{'count': 10, 'type': 'FIT', 'updatedAt': '2025-01-28T17:11:31Z'}]}]
+        # Вывод: [{'sku': '123', 'warehouseId': 'warehouse_1', 'items':
+        [{'count': 10, 'type': 'FIT', 'updatedAt': '2025-01-28T17:11:31Z'}]}]
         print(all_stocks)
-        # Вывод: [{'sku': '123', 'warehouseId': 'warehouse_1', 'items': [{'count': 10, 'type': 'FIT', 'updatedAt': '2025-01-28T17:11:31Z'}]},
-        #         {'sku': '456', 'warehouseId': 'warehouse_1', 'items': [{'count': 0, 'type': 'FIT', 'updatedAt': '2025-01-28T17:11:31Z'}]}]
+        # Вывод: [{'sku': '123', 'warehouseId': 'warehouse_1', 'items':
+        [{'count': 10, 'type': 'FIT', 'updatedAt': '2025-01-28T17:11:31Z'}]},
+        #         {'sku': '456', 'warehouseId': 'warehouse_1', 'items':
+        [{'count': 0, 'type': 'FIT', 'updatedAt': '2025-01-28T17:11:31Z'}]}]
 
     Исключения:
-        ValueError: Если количество товара не может быть преобразовано в целое число.
+        ValueError: Если количество товара не может быть преобразовано
+        в целое число.
     """
     offer_ids = get_offer_ids(campaign_id, market_token)
     stocks = create_stocks(watch_remnants, offer_ids, warehouse_id)
@@ -343,14 +355,16 @@ def main():
     для учёта и отслеживания остатков на складе.
 
     Исключения:
-        requests.exceptions.ReadTimeout: Если запрос превышает допустимое время ожидания.
-        requests.exceptions.ConnectionError: Если возникает ошибка сетевого подключения.
+        requests.exceptions.ReadTimeout: Если запрос превышает допустимое
+        время ожидания.
+        requests.exceptions.ConnectionError: Если возникает ошибка сетевого
+        подключения.
         Exception: Для любых других исключений.
 
     Пример корректного использования:
         main()
-        # Функция выполнится успешно, если переменные окружения настроены правильно,
-        # и запросы на обновление остатков и цен пройдут без ошибок.
+        # Функция выполнится успешно, если переменные окружения настроены
+        # правильно, и запросы на обновление остатков и цен пройдут без ошибок.
 
     Пример некорректного использования:
         main()
