@@ -306,26 +306,6 @@ async def upload_stocks(watch_remnants, campaign_id, market_token, warehouse_id)
             где количество товара не равно нулю.
             - list: Список всех словарей с данными об остатках товаров.
 
-    Пример использования:
-        watch_remnants = [
-            {"Код": "123", "Количество": "10"},
-            {"Код": "456", "Количество": "0"},
-        ]
-        campaign_id = "campaign_1"
-        market_token = "your_market_token"
-        warehouse_id = "warehouse_1"
-        not_empty, all_stocks = await upload_stocks(
-            watch_remnants, campaign_id, market_token, warehouse_id
-        )
-        print(not_empty)
-        # Вывод: [{'sku': '123', 'warehouseId': 'warehouse_1', 'items':
-        [{'count': 10, 'type': 'FIT', 'updatedAt': '2025-01-28T17:11:31Z'}]}]
-        print(all_stocks)
-        # Вывод: [{'sku': '123', 'warehouseId': 'warehouse_1', 'items':
-        [{'count': 10, 'type': 'FIT', 'updatedAt': '2025-01-28T17:11:31Z'}]},
-        #         {'sku': '456', 'warehouseId': 'warehouse_1', 'items':
-        [{'count': 0, 'type': 'FIT', 'updatedAt': '2025-01-28T17:11:31Z'}]}]
-
     Исключения:
         ValueError: Если количество товара не может быть преобразовано
         в целое число.
