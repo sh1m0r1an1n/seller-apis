@@ -27,7 +27,8 @@ def get_product_list(last_id, client_id, seller_token):
         [{'id': 1, 'name': 'Товар 1'}, {'id': 2, 'name': 'Товар 2'}, ...]
 
     Исключения:
-        requests.exceptions.RequestException: Если возникает ошибка при отправке запроса.
+        requests.exceptions.RequestException: Если возникает ошибка
+        при отправке запроса.
         ValueError: Если 'result' отсутствует в ответе API.
     """
     url = "https://api-seller.ozon.ru/v2/product/list"
