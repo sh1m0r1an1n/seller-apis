@@ -12,7 +12,24 @@ logger = logging.getLogger(__file__)
 
 
 def get_product_list(last_id, client_id, seller_token):
-    """Получить список товаров магазина озон"""
+    """Получает список товаров из магазина Ozon.
+
+    Аргументы:
+        last_id (int): Идентификатор последнего полученного товара.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Возвращаемое значение:
+        list: Список товаров, доступных в магазине Ozon.
+
+    Пример использования:
+        >>> get_product_list(client_id, seller_token)
+        [{'id': 1, 'name': 'Товар 1'}, {'id': 2, 'name': 'Товар 2'}, ...]
+
+    Исключения:
+        requests.exceptions.RequestException: Если возникает ошибка при отправке запроса.
+        ValueError: Если 'result' отсутствует в ответе API.
+    """
     url = "https://api-seller.ozon.ru/v2/product/list"
     headers = {
         "Client-Id": client_id,
@@ -32,7 +49,23 @@ def get_product_list(last_id, client_id, seller_token):
 
 
 def get_offer_ids(client_id, seller_token):
-    """Получить артикулы товаров магазина озон"""
+    """Получает список артикулов товаров из магазина Ozon.
+
+    Аргументы:
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Возвращаемое значение:
+        list: Список артикулов товаров, доступных в магазине Ozon.
+
+    Пример использования:
+        >>> get_offer_ids(client_id, seller_token)
+        ['offer_id_1', 'offer_id_2', 'offer_id_3']
+
+    Исключения:
+        requests.exceptions.RequestException: Если возникает ошибка при
+        отправке запроса к API Ozon.
+    """
     last_id = ""
     product_list = []
     while True:
@@ -49,7 +82,24 @@ def get_offer_ids(client_id, seller_token):
 
 
 def update_price(prices: list, client_id, seller_token):
-    """Обновить цены товаров"""
+    """Обновляет цены товаров на Ozon.
+
+    Аргументы:
+        prices (list): Список словарей, каждый из которых содержит
+        'offer_id' (str) и 'price' (float).
+
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Возвращаемое значение:
+        dict: Ответ от API Ozon в формате JSON.
+
+    Исключения:
+        requests.exceptions.RequestException: Если возникает ошибка
+        при отправке запроса.
+        ValueError: Если 'offer_id' или 'price' отсутствуют в одном
+        из элементов списка 'prices'.
+    """
     url = "https://api-seller.ozon.ru/v1/product/import/prices"
     headers = {
         "Client-Id": client_id,
@@ -62,7 +112,24 @@ def update_price(prices: list, client_id, seller_token):
 
 
 def update_stocks(stocks: list, client_id, seller_token):
-    """Обновить остатки"""
+    """Обновляет информацию об остатках товаров в магазине Ozon.
+
+    Аргументы:
+        stocks (list): Список словарей с информацией об остатках товаров.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Возвращаемое значение:
+        bool: True, если обновление прошло успешно; False в противном случае.
+
+    Пример использования:
+        >>> update_stocks(stocks, client_id, seller_token)
+        True
+
+    Исключения:
+        requests.exceptions.RequestException: Если возникает ошибка при
+        отправке запроса к API Ozon.
+    """
     url = "https://api-seller.ozon.ru/v1/product/import/stocks"
     headers = {
         "Client-Id": client_id,
@@ -75,7 +142,23 @@ def update_stocks(stocks: list, client_id, seller_token):
 
 
 def download_stock():
-    """Скачать файл ostatki с сайта casio"""
+    """Скачивает файл с остатками товаров с указанного URL и извлекает данные.
+
+    Возвращаемое значение:
+        list: Список остатков товаров, извлечённых из Excel-файла.
+
+    Пример использования:
+        >>> download_stock()
+        [{'offer_id': 'offer_id_1', 'stock': 100},
+        {'offer_id': 'offer_id_2', 'stock': 50}, ...]
+
+    Исключения:
+        requests.exceptions.RequestException: Если возникает ошибка при
+        скачивании файла.
+        zipfile.BadZipFile: Если скачанный файл не является допустимым
+        ZIP-архивом.
+        KeyError: Если в данных отсутствуют ожидаемые ключи.
+    """
     # Скачать остатки с сайта
     casio_url = "https://timeworld.ru/upload/files/ostatki.zip"
     session = requests.Session()
@@ -96,6 +179,26 @@ def download_stock():
 
 
 def create_stocks(watch_remnants, offer_ids):
+    """Формирует список остатков товаров на складе.
+
+    Аргументы:
+        watch_remnants (list): Список данных об остатках товаров.
+        offer_ids (list): Список идентификаторов предложений.
+
+    Возвращаемое значение:
+        list: Список словарей с идентификаторами предложений
+        и соответствующими остатками.
+
+    Пример использования:
+        create_stocks(watch_remnants, offer_ids)
+        # Вывод: [{'offer_id': 'offer_id_1', 'stock': 100},
+        #          {'offer_id': 'offer_id_2', 'stock': 50},
+        #          {'offer_id': 'offer_id_3', 'stock': 0}]
+
+    Исключения:
+        KeyError: Если в данных об остатках отсутствует ключ 'offer_id'
+        или 'stock'.
+    """
     # Уберем то, что не загружено в seller
     stocks = []
     for watch in watch_remnants:
@@ -116,6 +219,26 @@ def create_stocks(watch_remnants, offer_ids):
 
 
 def create_prices(watch_remnants, offer_ids):
+    """Формирует список цен на товары.
+
+    Аргументы:
+        watch_remnants (list): Список данных об остатках товаров.
+        offer_ids (list): Список идентификаторов предложений.
+
+    Возвращаемое значение:
+        list: Список словарей с идентификаторами предложений и
+        соответствующими ценами.
+
+    Пример использования:
+        create_prices(watch_remnants, offer_ids)
+        # Вывод: [{'offer_id': 'offer_id_1', 'price': 100},
+        #          {'offer_id': 'offer_id_2', 'price': 50},
+        #          {'offer_id': 'offer_id_3', 'price': 0}]
+
+    Исключения:
+        KeyError: Если в данных об остатках отсутствует ключ 'offer_id'
+        или 'stock'.
+    """
     prices = []
     for watch in watch_remnants:
         if str(watch.get("Код")) in offer_ids:
@@ -132,10 +255,6 @@ def create_prices(watch_remnants, offer_ids):
 
 def price_conversion(price: str) -> str:
     """Преобразует строковое представление цены в числовой формат.
-
-    Эта функция принимает строку, представляющую цену с разделителями
-    тысяч и десятичных знаков, и возвращает строку, представляющую
-    числовое значение этой цены без разделителей.
 
     Аргументы:
         price (str): Строка, представляющая цену, например, "5'990.00 руб.".
@@ -155,12 +274,53 @@ def price_conversion(price: str) -> str:
 
 
 def divide(lst: list, n: int):
-    """Разделить список lst на части по n элементов"""
+    """Разделяет список на части по n элементов.
+
+    Аргументы:
+        lst (list): Исходный список, который требуется разделить.
+        n (int): Максимальное количество элементов в каждом подсписке.
+
+    Возвращаемое значение:
+        generator: Генератор, который поочередно выдаёт подсписки
+        исходного списка.
+
+    Пример использования:
+        >>> lst = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        >>> n = 3
+        >>> for part in divide(lst, n):
+        >>>     print(part)
+        [1, 2, 3]
+        [4, 5, 6]
+        [7, 8, 9]
+
+    Исключения:
+        ValueError: Если n меньше или равно нулю.
+    """
     for i in range(0, len(lst), n):
         yield lst[i : i + n]
 
 
 async def upload_prices(watch_remnants, client_id, seller_token):
+    """Асинхронно загружает цены на товары в систему.
+
+    Аргументы:
+        watch_remnants (list): Список данных об остатках товаров.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Возвращаемое значение:
+        list: Список обновленных цен на товары.
+
+    Пример использования:
+        >>> upload_prices(watch_remnants, client_id, seller_token)
+        [{'offer_id': 'offer_id_1', 'price': 100},
+         {'offer_id': 'offer_id_2', 'price': 50}]
+
+    Исключения:
+        ValueError: Если watch_remnants пуст или содержит некорректные данные.
+        KeyError: Если в данных отсутствуют необходимые ключи.
+        Exception: Если возникает ошибка при обновлении цен.
+    """
     offer_ids = get_offer_ids(client_id, seller_token)
     prices = create_prices(watch_remnants, offer_ids)
     for some_price in list(divide(prices, 1000)):
@@ -169,6 +329,34 @@ async def upload_prices(watch_remnants, client_id, seller_token):
 
 
 async def upload_stocks(watch_remnants, client_id, seller_token):
+    """Асинхронно обновляет остатки товаров в системе.
+
+    Аргументы:
+        watch_remnants (list): Список данных об остатках товаров.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Возвращаемое значение:
+        tuple: Кортеж из двух списков:
+            - not_empty (list): Список остатков товаров, где количество
+            больше нуля.
+            - stocks (list): Список всех остатков товаров.
+
+    Пример использования:
+        >>> not_empty, stocks = await upload_stocks(watch_remnants,
+        client_id, seller_token)
+        >>> print(not_empty)
+        [{'offer_id': 'offer_id_1', 'stock': 100},
+        {'offer_id': 'offer_id_2', 'stock': 50}]
+        >>> print(stocks)
+        [{'offer_id': 'offer_id_1', 'stock': 100},
+        {'offer_id': 'offer_id_2', 'stock': 50}]
+
+    Исключения:
+        ValueError: Если watch_remnants пуст или содержит некорректные данные.
+        KeyError: Если в данных отсутствуют необходимые ключи.
+        Exception: Если возникает ошибка при обновлении остатков.
+    """
     offer_ids = get_offer_ids(client_id, seller_token)
     stocks = create_stocks(watch_remnants, offer_ids)
     for some_stock in list(divide(stocks, 100)):
@@ -178,6 +366,12 @@ async def upload_stocks(watch_remnants, client_id, seller_token):
 
 
 def main():
+    """Основная функция программы.
+
+    Исключения:
+        ValueError: Если входные данные некорректны.
+        FileNotFoundError: Если указанный файл не найден.
+    """
     env = Env()
     seller_token = env.str("SELLER_TOKEN")
     client_id = env.str("CLIENT_ID")
